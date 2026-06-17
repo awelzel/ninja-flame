@@ -30,19 +30,19 @@ exec awk -v build_dir=$build_dir '$1 !~ /^#/ {
 	# with the absolute build directory.
 	sub("^" build_dir, "", file);
 
-	# If the command/hash is already in files, use the basename
-	# of the next file and add it with a "," separator. Hopefully
-	# this ends-up nice. It works for Zeek/Spicy parser generators
-	# fairly well (BinPAC, Spicy).
+	# If the command/hash is already in files (and durations), append
+	# the basename of this entry to the existing entry with a ","
+	# separator. Hopefully this ends-up nice. It works for the
+	# Spicy and BinPAC parser generators fairly well.
 	if ( hash in files ) {
 		n = split($4, parts, "/")
 		basename = parts[n]
 		files[hash] = files[hash] "," basename;
 	} else {
 		files[hash] = file;
+		durations[hash] += duration;
 	}
 
-	durations[hash] += duration;
 } END {
 	for (hash in files) {
 		duration = durations[hash];
